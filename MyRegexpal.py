@@ -18,9 +18,11 @@ class Aplicacion(Frame):
         self.cont1 = ttk.Frame(self.mainFrame, padding="10 10 10 10")
         self.cont2 = ttk.Frame(self.mainFrame, padding="10 10 10 10")
         self.cont3 = ttk.Frame(self.mainFrame, padding="10 10 10 10")
+        self.cont4 = ttk.Frame(self.mainFrame, padding="10 10 10 10")
         self.cont1.grid(row=0, column=0, sticky=(N, W, E, S))
         self.cont2.grid(row=1, column=0, sticky=(N, W, E, S))
         self.cont3.grid(row=2, column=0, sticky=(N, W, E, S))
+        self.cont4.grid(row=3, column=0, sticky=(N, W, E, S))
 
         self.label1 = ttk.Label(self.cont1, text="Expresion Regular")
         self.re = StringVar()
@@ -31,11 +33,11 @@ class Aplicacion(Frame):
         self.bt1.grid(row=1, column=1, sticky=(N, W, E, S), padx=5, pady=5)
 
         self.label2 = ttk.Label(self.cont2, text="Texto")
-        self.txt2 = st.ScrolledText(self.cont2, width=70, height=6)
+        self.txt2 = st.ScrolledText(self.cont2, width=70, height=5)
         self.label2.grid(row=0, column=0, sticky=(N, W, E, S), padx=5, pady=5)
         self.txt2.grid(row=1, column=0, sticky=(N, W, E, S), padx=5, pady=5)
 
-        self.lista1 = ttk.Treeview(self.cont3, height=5)
+        self.lista1 = ttk.Treeview(self.cont3, height=3)
         self.lista1.heading('#0', text="Matches")
         self.lista1.column("#0", width=568, minwidth=270, stretch=NO)
         self.lista1.grid(row=0, column=0, sticky=(N, W, E, S), padx=0, pady=5)
@@ -47,16 +49,34 @@ class Aplicacion(Frame):
         self.label3 = ttk.Label(self.cont3, textvariable=self.Label3Matches)
         self.label3.grid(row=1, column=0, sticky=(N, W, E, S), padx=5, pady=5)
 
+        self.lista2 = ttk.Treeview(self.cont4, height=3)
+        self.lista2.heading('#0', text="Groups")
+        self.lista2.column("#0", width=568, minwidth=270, stretch=NO)
+        self.lista2.grid(row=0, column=0, sticky=(N, W, E, S), padx=0, pady=5)
+        self.vsb2 = ttk.Scrollbar(self.cont4, orient="vertical",
+                                  command=self.lista2.yview)
+        self.vsb2.grid(row=0, column=1, sticky=(N, W, E, S), pady=5)
+        self.lista2.configure(yscrollcommand=self.vsb2.set)
+
     def buscar(self):
         self.lista1.delete(*self.lista1.get_children())
+        self.lista2.delete(*self.lista2.get_children())
 
+        texto = self.txt2.get("1.0", END)
         self.compilado = re.compile(self.re.get())
-        listaMacth = self.compilado.findall(self.txt2.get("1.0", END))
+        listaMacth = self.compilado.findall(texto)
 
-        for m in listaMacth:
-            self.lista1.insert('', END, text=m)
+        for ma in listaMacth:
+            self.lista1.insert('', END, text=ma)
 
         self.Label3Matches.set('Numero de matches: {}'.format(len(listaMacth)))
+
+        m = self.compilado.search(texto)
+        groups = list(m.groups())
+        groups.insert(0, m.group())
+        for i in range(len(groups)):
+            g = "%2d: %r" % (i, groups[i])
+            self.lista2.insert('', END, text=g)
 
 
 if __name__ == "__main__":
