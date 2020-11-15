@@ -1,6 +1,7 @@
 from tkinter import *
 from tkinter import ttk
 from tkinter import scrolledtext as st
+from tkinter import messagebox
 import re
 
 
@@ -63,20 +64,27 @@ class Aplicacion(Frame):
         self.lista2.delete(*self.lista2.get_children())
 
         texto = self.txt2.get("1.0", END)
-        self.compilado = re.compile(self.re.get())
-        listaMacth = self.compilado.findall(texto)
-
-        for ma in listaMacth:
-            self.lista1.insert('', END, text=ma)
-
-        self.Label3Matches.set('Numero de matches: {}'.format(len(listaMacth)))
-
-        m = self.compilado.search(texto)
-        groups = list(m.groups())
-        groups.insert(0, m.group())
-        for i in range(len(groups)):
-            g = "%2d: %r" % (i, groups[i])
-            self.lista2.insert('', END, text=g)
+        try:
+            self.compilado = re.compile(self.re.get(), re.MULTILINE)
+            last = 0
+            nmatches = 0
+            while last <= len(texto):
+                m = self.compilado.search(texto, last)
+                if m is None:
+                    break
+                first, last = m.span()
+                if last == first:
+                    last = first+1
+                self.lista1.insert('', END, text=texto[first:last])
+                groups = list(m.groups())
+                groups.insert(0, m.group())
+                for i in range(len(groups)):
+                    g = "%2d: %r" % (i, groups[i])
+                    self.lista2.insert('', END, text=g)
+                nmatches = nmatches + 1
+                self.Label3Matches.set('Total de matches: {}'.format(nmatches))
+        except re.error as msg:
+            messagebox.showerror("Error", msg)
 
 
 if __name__ == "__main__":
