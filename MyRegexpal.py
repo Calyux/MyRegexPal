@@ -77,7 +77,8 @@ class Aplicacion(Frame):
                               command=self.replaceGroup)
         self.bt2.grid(row=1, column=2, sticky=(N, W, E, S), padx=5, pady=5)
         self.txt3 = st.ScrolledText(self.cont5, width=70, height=5)
-        self.txt3.grid(row=2, column=0, columnspan=4, sticky=(N, W, E, S), padx=5, pady=5)
+        self.txt3.grid(row=2, column=0, columnspan=4, sticky=(N, W, E, S),
+                       padx=5, pady=5)
 
     def buscar(self):
         self.lista1.delete(*self.lista1.get_children())
